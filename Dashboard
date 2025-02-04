@@ -1,0 +1,53 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Line } from "react-chartjs-2";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+export default function Dashboard() {
+  const [data, setData] = useState(Array.from({ length: 10 }, () => Math.random() * 100));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setData((prevData) => [...prevData.slice(1), Math.random() * 100]);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const chartData = {
+    labels: Array.from({ length: data.length }, (_, i) => i + 1),
+    datasets: [
+      {
+        label: "Performance",
+        data: data,
+        fill: false,
+        borderColor: "#007bff",
+        tension: 0.4,
+      },
+    ],
+  };
+
+  return (
+    <div className="p-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+        <Card>
+          <CardContent>
+            <h2 className="text-xl font-bold">Dashboard Inteligente</h2>
+            <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+          </CardContent>
+        </Card>
+      </motion.div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.5 }}>
+        <Card>
+          <CardContent>
+            <h3 className="text-lg font-semibold">Controle</h3>
+            <Button onClick={() => setData(Array.from({ length: 10 }, () => Math.random() * 100))}>Resetar Dados</Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+}
